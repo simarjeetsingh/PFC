@@ -1,4 +1,4 @@
-package com.fpInformatica;
+package org.foobarspam.fpInformatica.forum;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
