@@ -8,14 +8,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "user")
+@Table(name = "users")
 @Data
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false, length = 10)
@@ -29,14 +30,9 @@ public class User {
 
     private LocalDateTime createdDate;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Topic> topics;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Answer> answers;
-
-    public String displayParsedDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        return this.createdDate.format(formatter);
-    }
 }

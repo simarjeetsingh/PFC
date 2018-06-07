@@ -35,53 +35,52 @@ public class TopicController {
     }
 
     @GetMapping("topic/{id}")
-    public String displayTopic(@PathVariable String id, Model model) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = ((UserDetails)principal).getUsername();
-        Long idUser = userRepository.getUserByUsername(username).getId();
-
+    public Topic displayTopic(@PathVariable String id) {
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        String username = ((UserDetails)principal).getUsername();
+//        Long idUser = userRepository.getUserByUsername(username).getId();
         Topic topic = topicRepository.findTopicById(Long.valueOf(id));
-        List<Answer> answers = answerRepository.findAnswerByTopic_Id(Long.valueOf(id));
-
-        model.addAttribute("topic", topic);
-        model.addAttribute("answers", answers);
-        model.addAttribute("idUser", idUser);
-        return "topic";
+//        List<Answer> answers = answerRepository.findAnswerByTopic_Id(Long.valueOf(id));
+//
+//        model.addAttribute("topic", topic);
+//        model.addAttribute("answers", answers);
+//        model.addAttribute("idUser", idUser);
+        return topic;
     }
 
-    @PostMapping("topic/{id}")
-    public View updateAnswer(@RequestParam String id_topic, @RequestParam String action, @RequestParam String id_answer,
-                             @RequestParam(required = false) String state, HttpServletRequest request) {
-        switch (action) {
-            case "useful" :
-                answerRepository.setUsefulForAnswer(!Boolean.valueOf(state), Long.valueOf(id_answer));
-                break;
-            case "delete" :
-                answerRepository.deleteAnswerById(Long.valueOf(id_answer));
-                break;
-        }
-        String contextPath = request.getContextPath();
-        return new RedirectView(contextPath + "/topic/" + id_topic);
-    }
+//    @PostMapping("topic/{id}")
+//    public View updateAnswer(@RequestParam String id_topic, @RequestParam String action, @RequestParam String id_answer,
+//                             @RequestParam(required = false) String state, HttpServletRequest request) {
+//        switch (action) {
+//            case "useful" :
+//                answerRepository.setUsefulForAnswer(!Boolean.valueOf(state), Long.valueOf(id_answer));
+//                break;
+//            case "delete" :
+//                answerRepository.deleteAnswerById(Long.valueOf(id_answer));
+//                break;
+//        }
+//        String contextPath = request.getContextPath();
+//        return new RedirectView(contextPath + "/topic/" + id_topic);
+//    }
 
-    @PostMapping("topic")
-    public View addAnswer(@RequestParam("content") String content, @RequestParam("code") String code,
-                          @RequestParam("id_topic") String id_topic, @RequestParam("id_user") String id_user,
-                          HttpServletRequest request) {
-        Answer answer = new Answer();
-        answer.setContent(content);
-
-        if (Objects.equals(code, ""))
-            answer.setCode(null);
-        else
-            answer.setCode(code);
-        answer.setCreatedDate(LocalDateTime.now());
-        answer.setUseful(false);
-        answer.setTopic(topicRepository.findTopicById(Long.valueOf(id_topic)));
-        answer.setUser(userRepository.getUserById(Long.parseLong(id_user)));
-
-        answerRepository.save(answer);
-        String contextPath = request.getContextPath();
-        return new RedirectView(contextPath + "/topic/" + id_topic);
-    }
+//    @PostMapping("topic")
+//    public View addAnswer(@RequestParam("content") String content, @RequestParam("code") String code,
+//                          @RequestParam("id_topic") String id_topic, @RequestParam("id_user") String id_user,
+//                          HttpServletRequest request) {
+//        Answer answer = new Answer();
+//        answer.setContent(content);
+//
+//        if (Objects.equals(code, ""))
+//            answer.setCode(null);
+//        else
+//            answer.setCode(code);
+//        answer.setCreatedDate(LocalDateTime.now());
+//        answer.setUseful(false);
+//        answer.setTopic(topicRepository.findTopicById(Long.valueOf(id_topic)));
+//        answer.setUser(userRepository.getUserById(Long.parseLong(id_user)));
+//
+//        answerRepository.save(answer);
+//        String contextPath = request.getContextPath();
+//        return new RedirectView(contextPath + "/topic/" + id_topic);
+//    }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class Topic {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false, length = 32)
@@ -31,10 +31,9 @@ public class Topic {
     @Column(length = 1024)
     private String code;
 
-    @ManyToOne
-    @JoinColumn(name = "id_user")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "topic")
+    @OneToMany(mappedBy = "topic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Answer> answers;
 }
