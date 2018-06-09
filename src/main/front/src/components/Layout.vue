@@ -5,7 +5,7 @@
             <div class="wrap" style="width: 1140px;">
                 <div class="title-area">
                     <p class="site-title">
-                        <a href="#">
+                        <a @click="$router.push('/')" style="cursor: pointer">
                             <span class="brackets">{Fp} Informática</span>
                         </a>
                     </p>
@@ -14,19 +14,22 @@
                     <section id="nav_menu-3" class="widget widget_nav_menu">
                         <div class="widget-wrap">
                             <nav class="nav-header">
-                                <ul id="menu-main-menu" class="menu genesis-nav-menu responsive-menu">
-                                    <li id="menu-item-382"
-                                        class="menu-item">
-                                        <a href="#">
+                                <ul class="menu genesis-nav-menu">
+                                    <li class="menu-item">
+                                        <a @click="$router.push('fp')" style="cursor: pointer">
                                             <span>¿Qué es la FP?</span>
+
                                         </a>
                                         <ul class="sub-menu">
-                                            <li class="menu-item "><a href="" itemprop="url"><span
-                                                    itemprop="name">Cómo acceder</span></a></li>
+                                            <li class="menu-item ">
+                                                <a @click="$router.push('acceso')" style="cursor: pointer">
+                                                    <span>Cómo acceder</span>
+                                                </a>
+                                            </li>
                                         </ul>
                                     </li>
-                                    <li id="menu-item-341" class="menu-item">
-                                        <a href="#">
+                                    <li class="menu-item">
+                                        <a @click="$router.push('ciclos')" style="cursor: pointer">
                                             <span>¿Qué estudiar?</span>
                                         </a>
                                         <ul class="sub-menu">
@@ -38,12 +41,12 @@
                                         </ul>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="#">
+                                        <a @click="$router.push('profesion')" style="cursor: pointer">
                                             <span>La profesión?</span>
                                         </a>
                                     </li>
-                                    <li  class="menu-item">
-                                        <a href="/">
+                                    <li class="menu-item">
+                                        <a @click="$router.push('foros')" style="cursor: pointer">
                                             <span>Foros</span></a>
                                     </li>
                                 </ul>
@@ -52,14 +55,59 @@
                     </section>
                     <section id="text-17" class="widget widget_text">
                         <div class="widget-wrap">
-                            <div class="textwidget">
-                                <a href="#"><q-icon name="person" color="white" size="20px" style="margin-bottom: 4px;"/> Login</a>
-                            </div>
+                            <nav class="nav-header">
+                                <ul v-if="!showLogout" class="menu genesis-nav-menu">
+                                    <li class="menu-item">
+                                        <a @click="showRegisterModal" style="cursor: pointer; padding: 0 10px">
+                                            <!--<q-icon name="person_add" color="white" size="20px"-->
+                                            <!--style="margin-bottom: 4px;"/>-->
+                                            Registro
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a @click="showLoginModal" style="cursor: pointer; padding: 0;">
+                                            <!--<q-icon name="person" color="white" size="20px"-->
+                                            <!--style="margin-bottom: 4px;"/>-->
+                                            Login
+                                        </a>
+                                    </li>
+                                </ul>
+                                <ul v-else class="menu genesis-nav-menu">
+                                    <li class="menu-item">
+                                        <a @click="logout" style="cursor: pointer; padding: 0 10px">
+                                            Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                     </section>
                 </div>
             </div>
         </q-layout-header>
+        <a-modal ref="loginModal" flat-actions minimized alignActions="right">
+            <p style="text-align: center; font-size: 30px">Login</p>
+            <form @submit.prevent="userLogin">
+                <q-input float-label="Nombre de usuario" name="username" v-model="model.username"/>
+                <q-input float-label="Contraseña" name="password" v-model="model.password"/>
+                <!--<q-btn size="md" label="login" color="primary"  flat @click="userLogin"/>-->
+                <!--<q-btn size="md" label="register" color="primary"  type="submit" flat @click="register" float="right"/>-->
+                <q-btn size="md" label="login" color="primary" type="submit" flat/>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </a-modal>
+
+        <a-modal ref="registerModal" flat-actions  minimized alignActions="right" >
+            <p style="text-align: center; font-size: 30px">Registro</p>
+            <form @submit.prevent="register">
+                <q-input float-label="Nombre de usuario" v-model="model.username"/>
+                <q-input float-label="Contraseña" v-model="model.password"/>
+                <q-input float-label="Introducción" v-model="model.introduction"/>
+                <!--<q-btn size="md" label="login" color="primary"  flat @click="userLogin"/>-->
+                <!--<q-btn size="md" label="register" color="primary"  type="submit" flat @click="register" float="right"/>-->
+                <q-btn size="md" label="enviar" color="primary" type="submit" flat/>
+            </form>
+        </a-modal>
 
         <!-- sub-routes get injected here: -->
         <q-page-container>
@@ -214,21 +262,92 @@
     }
 
     /*#text-17.widget .textwidget a::before {*/
-        /*content: "\f007";*/
-        /*font-family: fontawesome;*/
-        /*margin-right: 10px;*/
-        /*color: #fff;*/
+    /*content: "\f007";*/
+    /*font-family: fontawesome;*/
+    /*margin-right: 10px;*/
+    /*color: #fff;*/
     /*}*/
 
 </style>
 <script lang="ts">
     import Vue from 'vue';
     import Component from 'vue-class-component';
+    import AModal from './AModal'
+    import axios from 'axios';
+    import Quasar from "arteco-framework-vue-v2/dist/src/definitions/quasar";
 
     @Component({
         name: 'layout',
+        components: {AModal}
     })
     export default class Layout extends Vue {
+        $q: Quasar;
+        showLogout: boolean = false;
+
+        model = {username: '', password: '', introduction: ''};
+
+        // register = {username: '', password: ''};
+
+        showLoginModal() {
+            (<AModal> this.$refs.loginModal).open();
+            // this.$router.push('login');
+        }
+
+        showRegisterModal() {
+            (<AModal> this.$refs.registerModal).open();
+            // this.$router.push('login');
+        }
+
+        userLogin() {
+            console.log('login clicked');
+            axios
+            // .get('https://api.coindesk.com/v1/bpi/currentprice.json')
+                .get('http://localhost:8080/api/login')
+                .then(response => {
+                    this.showLogout = true,
+                        console.log(response);
+                    console.log('logged...');
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+
+        }
+
+        register() {
+            // console.log(this.model.username + ' ' + this.model.password)
+            let data = JSON.stringify({
+                username: this.model.username,
+                password: this.model.password,
+                introduction: this.model.introduction
+            });
+
+
+            axios
+            // .post('http://localhost:8080/api/register', {username: this.model.username, password: this.model.password} )
+                .post('http://localhost:8080/api/register', data, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.status === 200) {
+                        this.$q.notify({
+                            type: 'positive',
+                            message: 'El usuario se ha registrado coorectamente'
+                        })
+                    } else {
+                        this.$q.notify({
+                            type: 'negative',
+                            message: 'algo ha ido mal'
+                        })
+                    }
+                    console.log(response);
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        }
 
     }
 </script>
