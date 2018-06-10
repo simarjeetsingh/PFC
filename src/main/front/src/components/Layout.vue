@@ -4,17 +4,17 @@
         <q-layout-header class="site-header">
             <div class="wrap" style="width: 1140px;">
                 <div class="title-area">
-                    <p class="site-title">
+                    <p>
                         <a @click="$router.push('/')" style="cursor: pointer">
                             <span class="brackets">{Fp} Informática</span>
                         </a>
                     </p>
                 </div>
-                <div class="widget-area header-widget-area">
-                    <section id="nav_menu-3" class="widget widget_nav_menu">
-                        <div class="widget-wrap">
+                <div class="widget-area">
+                    <section id="nav_menu-3">
+                        <div>
                             <nav class="nav-header">
-                                <ul class="menu genesis-nav-menu">
+                                <ul class="menu nav-menu">
                                     <li class="menu-item">
                                         <a @click="$router.push('fp')" style="cursor: pointer">
                                             <span>¿Qué es la FP?</span>
@@ -34,15 +34,15 @@
                                         </a>
                                         <ul class="sub-menu">
                                             <li class="menu-item ">
-                                                <a href="" itemprop="url">
-                                                    <span itemprop="name">Why ?</span>
+                                                <a>
+                                                    <span>Why ?</span>
                                                 </a>
                                             </li>
                                         </ul>
                                     </li>
                                     <li class="menu-item">
                                         <a @click="$router.push('profesion')" style="cursor: pointer">
-                                            <span>La profesión?</span>
+                                            <span>La profesión</span>
                                         </a>
                                     </li>
                                     <li class="menu-item">
@@ -56,23 +56,18 @@
                     <section id="text-17" class="widget widget_text">
                         <div class="widget-wrap">
                             <nav class="nav-header">
-                                <ul v-if="!showLogout" class="menu genesis-nav-menu">
+                                <ul v-if="!showLogout" class="menu nav-menu">
                                     <li class="menu-item">
                                         <a @click="showRegisterModal" style="cursor: pointer; padding: 0 10px">
                                             <!--<q-icon name="person_add" color="white" size="20px"-->
                                             <!--style="margin-bottom: 4px;"/>-->
-                                            Registro
-                                        </a>
+                                            Registro</a>
                                     </li>
                                     <li class="menu-item">
-                                        <a @click="showLoginModal" style="cursor: pointer; padding: 0;">
-                                            <!--<q-icon name="person" color="white" size="20px"-->
-                                            <!--style="margin-bottom: 4px;"/>-->
-                                            Login
-                                        </a>
+                                        <a @click="showLoginModal" style="cursor: pointer; padding: 0;">Login</a>
                                     </li>
                                 </ul>
-                                <ul v-else class="menu genesis-nav-menu">
+                                <ul v-else class="menu nav-menu">
                                     <li class="menu-item">
                                         <a @click="logout" style="cursor: pointer; padding: 0 10px">
                                             Logout
@@ -118,8 +113,6 @@
 <style>
     h1, h2, h3, h4, h5, h6, .site-header, p {
         font-family: "Roboto", sans-serif;
-        /*text-transform: inherit;*/
-        /*color: inherit;*/
     }
 
     .site-header {
@@ -156,7 +149,7 @@
         margin-left: 215px;
     }
 
-    .genesis-nav-menu {
+    .nav-menu {
         clear: both;
         color: #fff;
         font-family: Montserrat, sans-serif;
@@ -175,12 +168,12 @@
         font-size: 16px;
     }
 
-    .genesis-nav-menu .menu-item {
+    .nav-menu .menu-item {
         display: inline-block;
         text-align: left;
     }
 
-    .genesis-nav-menu a {
+    .nav-menu a {
         padding: 0 20px;
         line-height: 70px;
         transition: background .3s;
@@ -213,18 +206,18 @@
         text-decoration: none;
     }
 
-    .genesis-nav-menu .menu-item:hover {
+    .nav-menu .menu-item:hover {
         background-color: #444;
     }
 
-    .genesis-nav-menu .menu-item:hover .sub-menu {
+    .nav-menu .menu-item:hover .sub-menu {
         /*display: block;*/
         opacity: 1;
         visibility: visible;
         /*transition-delay: 0.1s;*/
     }
 
-    .genesis-nav-menu .sub-menu {
+    .nav-menu .sub-menu {
         padding: 20px 0 10px;
         background-color: #444;
         width: 300px;
@@ -238,7 +231,7 @@
     }
 
     a:link {
-        color: white;
+        color: #699e4f;
         background-color: transparent;
         text-decoration: none;
     }
@@ -256,18 +249,10 @@
     }
 
     a:active {
-        color: white;
+        color: #699e4f;
         background-color: transparent;
         text-decoration: none;
     }
-
-    /*#text-17.widget .textwidget a::before {*/
-    /*content: "\f007";*/
-    /*font-family: fontawesome;*/
-    /*margin-right: 10px;*/
-    /*color: #fff;*/
-    /*}*/
-
 </style>
 <script lang="ts">
     import Vue from 'vue';
@@ -290,18 +275,15 @@
 
         showLoginModal() {
             (<AModal> this.$refs.loginModal).open();
-            // this.$router.push('login');
         }
 
         showRegisterModal() {
             (<AModal> this.$refs.registerModal).open();
-            // this.$router.push('login');
         }
 
         userLogin() {
             console.log('login clicked');
             axios
-            // .get('https://api.coindesk.com/v1/bpi/currentprice.json')
                 .get('http://localhost:8080/api/login')
                 .then(response => {
                     this.showLogout = true,
@@ -315,7 +297,6 @@
         }
 
         register() {
-            // console.log(this.model.username + ' ' + this.model.password)
             let data = JSON.stringify({
                 username: this.model.username,
                 password: this.model.password,
@@ -334,7 +315,7 @@
                     if (response.status === 200) {
                         this.$q.notify({
                             type: 'positive',
-                            message: 'El usuario se ha registrado coorectamente'
+                            message: 'El usuario se ha registrado correctamente'
                         })
                     } else {
                         this.$q.notify({
