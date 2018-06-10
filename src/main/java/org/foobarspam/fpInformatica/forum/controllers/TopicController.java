@@ -1,86 +1,89 @@
 package org.foobarspam.fpInformatica.forum.controllers;
 
+import org.foobarspam.fpInformatica.forum.dto.AnswerDTO;
 import org.foobarspam.fpInformatica.forum.entities.Answer;
 import org.foobarspam.fpInformatica.forum.entities.Topic;
+import org.foobarspam.fpInformatica.forum.mapper.TopicMapper;
 import org.foobarspam.fpInformatica.forum.repositories.AnswerRepository;
 import org.foobarspam.fpInformatica.forum.repositories.TopicRepository;
 import org.foobarspam.fpInformatica.forum.repositories.UserRepository;
+import org.foobarspam.fpInformatica.forum.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
 
-@Controller
+//@Controller
+@RestController
+@RequestMapping("/api/")
+@CrossOrigin
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//@JsonAutoDetect
+//@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class TopicController {
 
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
     private final AnswerRepository answerRepository;
+    private final TopicService topicService;
+    private final TopicMapper topicMapper;
 
     @Autowired
-    public TopicController(UserRepository userRepository, TopicRepository topicRepository, AnswerRepository answerRepository) {
+    public TopicController(UserRepository userRepository, TopicRepository topicRepository, AnswerRepository answerRepository, TopicService topicService, TopicMapper topicMapper) {
         this.userRepository = userRepository;
         this.topicRepository = topicRepository;
         this.answerRepository = answerRepository;
+        this.topicService = topicService;
+        this.topicMapper = topicMapper;
     }
+
+//    @GetMapping(value ="/topic/{id}")
+//    public TopicDTO displayTopic(@PathVariable Long id) {
+////        List<Answer> answers = answerRepository.findAnswerByTopic_Id(id);
+//        return topicService.findtopicById(id);
+//    }
+
+//    @GetMapping(value ="topic/{id}")
+////    @JsonProperty
+////    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//    public Topic displayTopic(@PathVariable Long id) {
+////        List<Answer> answers = answerRepository.findAnswerByTopic_Id(id);
+////        return topicService.findtopicById(id);
+//        Topic topic = topicRepository.getOne(id);
+//        return topic;
+//    }
 
     @GetMapping("topic/{id}")
-    public Topic displayTopic(@PathVariable String id) {
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String username = ((UserDetails)principal).getUsername();
-//        Long idUser = userRepository.getUserByUsername(username).getId();
-        Topic topic = topicRepository.findTopicById(Long.valueOf(id));
-//        List<Answer> answers = answerRepository.findAnswerByTopic_Id(Long.valueOf(id));
-//
-//        model.addAttribute("topic", topic);
-//        model.addAttribute("answers", answers);
-//        model.addAttribute("idUser", idUser);
-        return topic;
+    public Topic readTopic(@PathVariable Long id) {
+
+        return this.topicRepository.findById(id)
+                .orElseThrow(() -> new TopicNotFoundException(id.toString()));
     }
 
-//    @PostMapping("topic/{id}")
-//    public View updateAnswer(@RequestParam String id_topic, @RequestParam String action, @RequestParam String id_answer,
-//                             @RequestParam(required = false) String state, HttpServletRequest request) {
-//        switch (action) {
-//            case "useful" :
-//                answerRepository.setUsefulForAnswer(!Boolean.valueOf(state), Long.valueOf(id_answer));
-//                break;
-//            case "delete" :
-//                answerRepository.deleteAnswerById(Long.valueOf(id_answer));
-//                break;
-//        }
-//        String contextPath = request.getContextPath();
-//        return new RedirectView(contextPath + "/topic/" + id_topic);
+    @PostMapping("topic/{topicId}/addAnswer")
+    public String addAnswer(@PathVariable Long topicId, @Valid @RequestBody AnswerDTO dto) {
+        Answer answer = new Answer();
+        answer.setContent(dto.getContent());
+        answer.setCode(dto.getCode());
+        answer.setUseful(false);
+        answer.setCreatedDate(LocalDateTime.now());
+        answer.setTopic(topicRepository.findTopicById(topicId));
+        answerRepository.save(answer);
+        return "Answer successfully added";
+    }
+
+
+//    @GetMapping("/{id}")
+//    public Topic readTopic(@PathVariable String userId, @PathVariable Long id) {
+//        this.validateUser(userId);
+//
+//        return this.topicRepository.findById(id)
+//                .orElseThrow(() -> new TopicNotFoundException(id.toString()));
+//    }
+//
+//    private void validateUser(String userId) {
+//        this.userRepository.findByUsername(userId).orElseThrow(
+//                () -> new UserNotFoundException(userId));
 //    }
 
-//    @PostMapping("topic")
-//    public View addAnswer(@RequestParam("content") String content, @RequestParam("code") String code,
-//                          @RequestParam("id_topic") String id_topic, @RequestParam("id_user") String id_user,
-//                          HttpServletRequest request) {
-//        Answer answer = new Answer();
-//        answer.setContent(content);
-//
-//        if (Objects.equals(code, ""))
-//            answer.setCode(null);
-//        else
-//            answer.setCode(code);
-//        answer.setCreatedDate(LocalDateTime.now());
-//        answer.setUseful(false);
-//        answer.setTopic(topicRepository.findTopicById(Long.valueOf(id_topic)));
-//        answer.setUser(userRepository.getUserById(Long.parseLong(id_user)));
-//
-//        answerRepository.save(answer);
-//        String contextPath = request.getContextPath();
-//        return new RedirectView(contextPath + "/topic/" + id_topic);
-//    }
 }
